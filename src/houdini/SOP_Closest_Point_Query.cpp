@@ -19,17 +19,8 @@ void newSopOperator(OP_OperatorTable *table)
 					0));
 }
 
-static PRM_Name names[] =
-{ PRM_Name("reset", "Reset Frame"), PRM_Name("subSteps", "Sub Steps"), PRM_Name("maxSubSteps",
-		"Max Sub Steps"), PRM_Name("sim_time_scale", "Simulation Time Scale") };
-
-static PRM_Default defaultSubSteps(1);
-static PRM_Default defaultMaxSubSteps(200);
-
 PRM_Template SOP_Closest_Point_Query::myTemplateList[] =
-{ PRM_Template(PRM_INT, 1, &names[0], PRMoneDefaults), PRM_Template(PRM_INT_J, 1, &names[1],
-		&defaultSubSteps), PRM_Template(PRM_INT_J, 1, &names[2], &defaultMaxSubSteps), PRM_Template(
-		PRM_FLT, 1, &names[3], PRMoneDefaults), PRM_Template(), };
+{ PRM_Template(), };
 
 
 OP_Node *
