@@ -1,0 +1,15 @@
+
+
+Import('env')
+
+
+lib_src = [ 'SOP_Closest_Point_Query.cpp' ]
+
+
+env.Append(LIBPATH = ['../core'])
+env.Append(LIBS = ['core'])
+
+for file in lib_src:
+	lib_target = file.rstrip('.cpp')
+	lib = env.SharedLibrary(source = file , target = lib_target)
+	

@@ -8,12 +8,14 @@
 #include <OP/OP_AutoLockInputs.h>
 #include <iostream>
 
+#include "../core/ClosestPointQuery.h"
+
 void newSopOperator(OP_OperatorTable *table)
 {
 	table->addOperator(
-			new OP_Operator("ns_create_sim", "NS Create Sim", SOP_Closest_Point_Query::myConstructor,
-					SOP_Closest_Point_Query::myTemplateList, 0, // Min required sources
-					1,	// Maximum sources
+			new OP_Operator("closest_point_query", "Closest Point Query", SOP_Closest_Point_Query::myConstructor,
+					SOP_Closest_Point_Query::myTemplateList, 2, // Min required sources
+					2,	// Maximum sources
 					0));
 }
 
@@ -52,6 +54,8 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 	if (inputs.lock(context) >= UT_ERROR_ABORT)
 		return error();
 
+	core::ClosestPointQuery query;
+	std::cout << query.getClosestPoint() << std::endl;
 
 	return error();
 }
