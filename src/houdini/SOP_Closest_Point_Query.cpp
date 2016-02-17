@@ -48,17 +48,17 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 	duplicateSource(0,context);
 	const GU_Detail* mesh = inputGeo(1);
 
-	std::cout << gdp->getNumPoints() << std::endl;
-	std::cout << mesh->getNumPrimitives() << std::endl;
-
-
 	core::ClosestPointQuery query(mesh);
 
-	GA_Offset poff = gdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(0);
-	UT_Vector3 pos = gdp->getPos3(poff);
-	double maxRadius = 10;
-	UT_Vector3 new_pos = query.getClosestPoint(pos,maxRadius);
-	gdp->setPos3(poff,new_pos);
+	GA_Offset poff;
+	GA_FOR_ALL_PTOFF(gdp,poff)
+	{
+//		GA_Offset poff = gdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(0);
+		UT_Vector3 pos = gdp->getPos3(poff);
+		double maxRadius = 10;
+		UT_Vector3 new_pos = query.getClosestPoint(pos, maxRadius);
+		gdp->setPos3(poff, new_pos);
+	}
 
 	return error();
 }
