@@ -23,7 +23,7 @@ ClosestPointQuery::~ClosestPointQuery()
 	// TODO Auto-generated destructor stub
 }
 
-float clamp(float val, float min, float max)
+double clamp(double val, double min, double max)
 {
 	if (val < min)
 		val = min;
@@ -32,33 +32,23 @@ float clamp(float val, float min, float max)
 	return val;
 }
 
-UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
+UT_Vector3 ClosestPointQuery::getProjP(int primNum, const UT_Vector3& P)
 {
-	int primNum = 0;
-
-
-
-
-	GEO_PrimPoly* poly = (GEO_PrimPoly*) mesh->getPrimitiveByIndex(primNum);
-
+	GEO_PrimPoly* poly = (GEO_PrimPoly*) (mesh->getPrimitiveByIndex(primNum));
 	UT_Vector3 p0 = poly->getPos3(0);
 	UT_Vector3 p1 = poly->getPos3(1);
 	UT_Vector3 p2 = poly->getPos3(2);
-
 	UT_Vector3 edge0 = p1 - p0;
 	UT_Vector3 edge1 = p2 - p0;
 	UT_Vector3 v0 = p0 - P;
-
-	float a = edge0.dot(edge0);
-	float b = edge0.dot(edge1);
-	float c = edge1.dot(edge1);
-	float d = edge0.dot(v0);
-	float e = edge1.dot(v0);
-
-	float det = a * c - b * b;
-	float s = b * e - c * d;
-	float t = b * d - a * e;
-
+	double a = edge0.dot(edge0);
+	double b = edge0.dot(edge1);
+	double c = edge1.dot(edge1);
+	double d = edge0.dot(v0);
+	double e = edge1.dot(v0);
+	double det = a * c - b * b;
+	double s = b * e - c * d;
+	double t = b * d - a * e;
 	if (s + t < det)
 	{
 		if (s < 0.f)
@@ -89,7 +79,7 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 		}
 		else
 		{
-			float invDet = 1.f / det;
+			double invDet = 1.f / det;
 			s *= invDet;
 			t *= invDet;
 		}
@@ -98,12 +88,12 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 	{
 		if (s < 0.f)
 		{
-			float tmp0 = b + d;
-			float tmp1 = c + e;
+			double tmp0 = b + d;
+			double tmp1 = c + e;
 			if (tmp1 > tmp0)
 			{
-				float numer = tmp1 - tmp0;
-				float denom = a - 2 * b + c;
+				double numer = tmp1 - tmp0;
+				double denom = a - 2 * b + c;
 				s = clamp(numer / denom, 0.f, 1.f);
 				t = 1 - s;
 			}
@@ -117,8 +107,8 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 		{
 			if (a + d > b + e)
 			{
-				float numer = c + e - b - d;
-				float denom = a - 2 * b + c;
+				double numer = c + e - b - d;
+				double denom = a - 2 * b + c;
 				s = clamp(numer / denom, 0.f, 1.f);
 				t = 1 - s;
 			}
@@ -130,17 +120,34 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 		}
 		else
 		{
-			float numer = c + e - b - d;
-			float denom = a - 2 * b + c;
+			double numer = c + e - b - d;
+			double denom = a - 2 * b + c;
 			s = clamp(numer / denom, 0.f, 1.f);
 			t = 1.f - s;
 		}
 	}
-
 	UT_Vector3 projP = p0 + s * edge0 + t * edge1;
-
-
 	return projP;
+}
+
+UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
+{
+
+	double minDist = 10000;
+	int closestPrimNum = 0;
+	int numPrims = mesh->getNumPrimitives();
+
+	for (int primNum = 0; primNum < numPrims; primNum++)
+	{
+		UT_Vector3 projP = getProjP(primNum, P);
+		double dist = projP.distance(P);
+		if(dist<minDist)
+		{
+			minDist = dist;
+			closestPrimNum = primNum;
+		}
+	}
+	return getProjP(closestPrimNum, P);
 
 }
 

@@ -58,7 +58,6 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 	UT_Vector3 pos = gdp->getPos3(poff);
 	double maxRadius = 10;
 	UT_Vector3 new_pos = query.getClosestPoint(pos,maxRadius);
-	std::cout << new_pos << std::endl;
 	gdp->setPos3(poff,new_pos);
 
 	return error();
