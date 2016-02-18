@@ -50,14 +50,13 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 
 	core::ClosestPointQuery query(mesh);
 
-	GA_Offset poff;
-	GA_FOR_ALL_PTOFF(gdp,poff)
+	GA_Offset ptoff;
+	GA_FOR_ALL_PTOFF(gdp,ptoff)
 	{
-//		GA_Offset poff = gdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(0);
-		UT_Vector3 pos = gdp->getPos3(poff);
+		UT_Vector3 pos = gdp->getPos3(ptoff);
 		double maxRadius = 10;
 		UT_Vector3 new_pos = query.getClosestPoint(pos, maxRadius);
-		gdp->setPos3(poff, new_pos);
+		gdp->setPos3(ptoff, new_pos);
 	}
 
 	return error();

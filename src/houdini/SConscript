@@ -3,7 +3,10 @@
 Import('env')
 
 
-lib_src = [ 'SOP_Closest_Point_Query.cpp' ]
+lib_src = [ 
+			'SOP_Closest_Point_Query.cpp',
+			'SOP_Sphere_Tree.cpp'
+			]
 
 
 env.Append(LIBPATH = ['../core'])

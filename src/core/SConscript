@@ -3,6 +3,8 @@
 Import('env')
 
 lib_src = [
+			'Sphere.cpp',
+			'SphereTree.cpp',
 			'ClosestPointQuery.cpp'
 			]
 lib_target = 'core'
