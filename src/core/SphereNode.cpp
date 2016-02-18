@@ -45,21 +45,6 @@ bool SphereNode::canMerge(SphereNode* sphereNodeB, double threshold, UT_Bounding
 	return (dS < threshold);
 }
 
-//void SphereNode::distanceTest(UT_Vector3 P)
-//{
-//	std::cout << "TEST THIS NODE" << std::endl;
-//	if (level == 0)
-//		std::cout << "TEST THIS LEAF NODE" << std::endl;
-//	else
-//	{
-//		double minUpperBound = std::min(child1->upperBound(P), child2->upperBound(P));
-//		if (minUpperBound > child1->lowerBound(P))
-//			child1->distanceTest(P);
-//		else
-//			child2->distanceTest(P);
-//	}
-//}
-
 double SphereNode::lowerBound(UT_Vector3 P)
 {
 	UT_Vector3 center = sphere.getCenter();

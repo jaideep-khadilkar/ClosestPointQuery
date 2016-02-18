@@ -42,10 +42,7 @@ void SphereTree::buildTree(double threshold)
 
 	workingList = leafNodes;
 
-//	double threshold = 3;
-
 	int counter = 10000;
-	size_t size = workingList.size();
 	for (size_t iA = 0; iA < workingList.size(); ++iA)
 	{
 		SphereNode* nodeA = workingList[iA];
@@ -68,12 +65,8 @@ void SphereTree::buildTree(double threshold)
 			}
 			if (nodeA->canMerge(nodeB, threshold, sphereAB))
 			{
-//				std::cout << "Can Merge !" << std::endl;
-//				std::cout << "iA : " << iA << std::endl;
-//				std::cout << "iB : " << iB << std::endl;
 				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
 				highestLevel = std::max(highestLevel, mergedNode->level);
-//				std::cout << "Level : " << mergedNode->level << std::endl;
 				completeNodeList.push_back(mergedNode);
 				workingList.push_back(mergedNode);
 				workingList[iA] = NULL;
@@ -100,11 +93,8 @@ const std::vector<SphereNode*>& SphereTree::getCompleteNodeList() const
 
 void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 {
-//	std::cout << "TEST THIS NODE" << std::endl;
-//	std::cout << "minUpperBound : " << minUpperBound << std::endl;
 	if (parent->level == 0)
 	{
-//		std::cout << "TEST THIS LEAF NODE" << std::endl;
 		filterdList.push_back(parent);
 	}
 	else
@@ -124,14 +114,12 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 {
 	minUpperBound = 100000;
 	filterdList.clear();
-//	std::cout << "SIZE : " << filterdList.size() << std::endl;
 
-	for (std::vector<core::SphereNode*>::iterator it = workingList.begin();
-			it != workingList.end(); ++it)
+	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
+			++it)
 	{
 		if ((*it) == NULL)
 			continue;
-//		if ((*it)->level == highestLevel)
 		{
 			double upperBound = (*it)->upperBound(P);
 			if (upperBound < minUpperBound)
@@ -139,29 +127,20 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 		}
 	}
 
-//	std::cout << "minUpperBound : " << minUpperBound << std::endl;
-
-	for (std::vector<core::SphereNode*>::iterator it = workingList.begin();
-			it != workingList.end(); ++it)
+	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
+			++it)
 	{
 		if ((*it) == NULL)
 			continue;
-//		if ((*it)->level == highestLevel)
 		{
 			double lowerBound = (*it)->lowerBound(P);
 			if (lowerBound < minUpperBound)
 			{
 				distanceTest((*it), P);
 			}
-//			else
-//			{
-//				std::cout << "DO NOT TEST" << std::endl;
-//			}
 		}
 
 	}
-
-//	std::cout << filterdList.size() << std::endl;
 
 	std::vector<SphereNode*> fineFilterdList;
 	std::vector<GEO_PrimPoly*> filterdPrims;
@@ -174,8 +153,6 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 			filterdPrims.push_back((*it)->poly);
 		}
 	}
-
-	std::cout << fineFilterdList.size() << std::endl;
 
 	return filterdPrims;
 }
@@ -184,14 +161,12 @@ std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
 {
 	minUpperBound = 100000;
 	filterdList.clear();
-//	std::cout << "SIZE : " << filterdList.size() << std::endl;
 
 	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
 			++it)
 	{
 		if ((*it) == NULL)
 			continue;
-//		if ((*it)->level == highestLevel)
 		{
 			double upperBound = (*it)->upperBound(P);
 			if (upperBound < minUpperBound)
@@ -199,29 +174,20 @@ std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
 		}
 	}
 
-//	std::cout << "minUpperBound : " << minUpperBound << std::endl;
-
 	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
 			++it)
 	{
 		if ((*it) == NULL)
 			continue;
-//		if ((*it)->level == highestLevel)
 		{
 			double lowerBound = (*it)->lowerBound(P);
 			if (lowerBound < minUpperBound)
 			{
 				distanceTest((*it), P);
 			}
-//			else
-//			{
-//				std::cout << "DO NOT TEST" << std::endl;
-//			}
 		}
 
 	}
-
-//	std::cout << filterdList.size() << std::endl;
 
 	std::vector<SphereNode*> fineFilterdList;
 	std::vector<GEO_PrimPoly*> filterdPrims;
@@ -234,8 +200,6 @@ std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
 			filterdPrims.push_back((*it)->poly);
 		}
 	}
-
-	std::cout << fineFilterdList.size() << std::endl;
 
 	return fineFilterdList;
 }
