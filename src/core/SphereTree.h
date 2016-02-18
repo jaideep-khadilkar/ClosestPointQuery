@@ -5,8 +5,8 @@
  *      Author: user
  */
 
-#ifndef CORE_SPHERENODETREE_H_
-#define CORE_SPHERENODETREE_H_
+#ifndef CORE_SPHERETREE_H_
+#define CORE_SPHERETREE_H_
 
 #include "GU/GU_Detail.h"
 #include "SphereNode.h"
@@ -24,10 +24,14 @@ public:
 
 private:
 	std::vector<UT_BoundingSphere> sphereVec;
+	std::vector<SphereNode*> leafNodes;
+	std::vector<SphereNode*> workingList;
 	const GU_Detail* mesh;
 
+	void buildLeafNodes();
+	void buildTree();
 };
 
 } /* namespace core */
 
-#endif /* CORE_SPHERENODETREE_H_ */
+#endif /* CORE_SPHERETREE_H_ */

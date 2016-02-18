@@ -11,7 +11,8 @@
 #include "GEO/GEO_PrimPoly.h"
 #include "GU/GU_PrimSphere.h"
 #include "UT/UT_Matrix3.h"
-#include "../core/SphereNodeTree.h"
+
+#include "../core/SphereTree.h"
 
 void newSopOperator(OP_OperatorTable *table)
 {
