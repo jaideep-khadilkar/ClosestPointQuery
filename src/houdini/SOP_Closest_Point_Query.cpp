@@ -54,10 +54,16 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 	core::ClosestPointQuery query(mesh, THRESHOLD());
 
 	GA_Offset ptoff;
+	GA_Attribute* pscale = gdp->findPointAttribute("pscale");
+	GA_ROHandleF pscale_handle(pscale);
 	GA_FOR_ALL_PTOFF(gdp, ptoff)
 	{
 		UT_Vector3 pos = gdp->getPos3(ptoff);
-		double maxRadius = 10;
+		double maxRadius = 1;
+		if (pscale_handle.isValid())
+		{
+			maxRadius = pscale_handle.get(ptoff);
+		}
 		UT_Vector3 new_pos = query.getClosestPoint(pos, maxRadius);
 		gdp->setPos3(ptoff, new_pos);
 	}

@@ -132,7 +132,7 @@ UT_Vector3 ClosestPointQuery::getProjP(GEO_PrimPoly* poly, const UT_Vector3& P)
 UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 {
 
-	double minDist = 10000;
+	double minDist = maxDist;
 	UT_Vector3 minProjP = P;
 
 	std::vector<GEO_PrimPoly*> filteredList = tree.getFilteredPrims(P);
