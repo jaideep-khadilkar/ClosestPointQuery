@@ -23,6 +23,7 @@ public:
 	void initialize(const GU_Detail* inputMesh, double threshold);
 	const std::vector<SphereNode*>& getCompleteNodeList() const;
 	std::vector<GEO_PrimPoly*> getFilteredPrims(UT_Vector3 P);
+	std::vector<SphereNode*> getFilteredSpheres(UT_Vector3 P);
 
 	int getHighestLevel() const
 	{

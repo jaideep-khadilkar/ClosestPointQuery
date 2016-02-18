@@ -123,7 +123,7 @@ void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 {
 	minUpperBound = 100000;
-//	filterdList.clear();
+	filterdList.clear();
 //	std::cout << "SIZE : " << filterdList.size() << std::endl;
 
 	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
@@ -176,5 +176,61 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 	return filterdPrims;
 }
 
-} /* namespace core */
 
+std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
+{
+	minUpperBound = 100000;
+	filterdList.clear();
+//	std::cout << "SIZE : " << filterdList.size() << std::endl;
+
+	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+			it != completeNodeList.end(); ++it)
+	{
+		if ((*it)->level == highestLevel)
+		{
+			double upperBound = (*it)->upperBound(P);
+			if (upperBound < minUpperBound)
+				minUpperBound = upperBound;
+		}
+	}
+
+//	std::cout << "minUpperBound : " << minUpperBound << std::endl;
+
+	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+			it != completeNodeList.end(); ++it)
+	{
+		if ((*it)->level == highestLevel)
+		{
+			double lowerBound = (*it)->lowerBound(P);
+			if (lowerBound < minUpperBound)
+			{
+				distanceTest((*it), P);
+			}
+//			else
+//			{
+//				std::cout << "DO NOT TEST" << std::endl;
+//			}
+		}
+
+	}
+
+//	std::cout << filterdList.size() << std::endl;
+
+	std::vector<SphereNode*> fineFilterdList;
+	std::vector<GEO_PrimPoly*> filterdPrims;
+	for (std::vector<core::SphereNode*>::iterator it = filterdList.begin(); it != filterdList.end();
+			++it)
+	{
+		if ((*it)->lowerBound(P) < minUpperBound)
+		{
+			fineFilterdList.push_back((*it));
+			filterdPrims.push_back((*it)->poly);
+		}
+	}
+
+	std::cout << fineFilterdList.size() << std::endl;
+
+	return fineFilterdList;
+}
+
+} /* namespace core */

@@ -60,13 +60,30 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 	tree.initialize(mesh, THRESHOLD());
 	std::vector<core::SphereNode*> completeNodeList = tree.getCompleteNodeList();
 
-	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
-			it != completeNodeList.end(); ++it)
+//	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+//			it != completeNodeList.end(); ++it)
+//	{
+//		if ((*it)->level == LEVEL())
+//		{
+//			UT_BoundingSphere boundingSphere = (*it)->sphere;
+//			buildSphereFromBoundingSphere(boundingSphere);
+//		}
+//	}
+
+	for(int i=0;i<pointsGdp->getNumPoints();i++)
 	{
-		if ((*it)->level == LEVEL())
+		GA_Offset ptoff = pointsGdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(i);
+		UT_Vector3 P = pointsGdp->getPos3(ptoff);
+		std::vector<core::SphereNode*> filteredList = tree.getFilteredSpheres(P);
+
+		for (std::vector<core::SphereNode*>::iterator it = filteredList.begin();
+				it != filteredList.end(); ++it)
 		{
-			UT_BoundingSphere boundingSphere = (*it)->sphere;
-			buildSphereFromBoundingSphere(boundingSphere);
+			if ((*it)->level == LEVEL())
+			{
+				UT_BoundingSphere boundingSphere = (*it)->sphere;
+				buildSphereFromBoundingSphere(boundingSphere);
+			}
 		}
 	}
 

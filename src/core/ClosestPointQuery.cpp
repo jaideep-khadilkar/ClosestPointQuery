@@ -137,30 +137,30 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 
 	std::vector<GEO_PrimPoly*> filteredList = tree.getFilteredPrims(P);
 
-//	for (std::vector<GEO_PrimPoly*>::iterator it = filteredList.begin();
-//				it != filteredList.end(); ++it)
-//	{
-//		UT_Vector3 projP = getProjP(*it, P);
-//		double dist = projP.distance(P);
-//		if(dist<minDist)
-//		{
-//			minDist = dist;
-//			minProjP = projP;
-//		}
-//	}
-
-	GEO_Primitive* prim;
-	GA_FOR_ALL_PRIMITIVES(mesh,prim)
+	for (std::vector<GEO_PrimPoly*>::iterator it = filteredList.begin();
+				it != filteredList.end(); ++it)
 	{
-		GEO_PrimPoly* poly = (GEO_PrimPoly*) prim;
-		UT_Vector3 projP = getProjP(poly, P);
+		UT_Vector3 projP = getProjP(*it, P);
 		double dist = projP.distance(P);
-		if (dist < minDist)
+		if(dist<minDist)
 		{
 			minDist = dist;
 			minProjP = projP;
 		}
 	}
+
+//	GEO_Primitive* prim;
+//	GA_FOR_ALL_PRIMITIVES(mesh,prim)
+//	{
+//		GEO_PrimPoly* poly = (GEO_PrimPoly*) prim;
+//		UT_Vector3 projP = getProjP(poly, P);
+//		double dist = projP.distance(P);
+//		if (dist < minDist)
+//		{
+//			minDist = dist;
+//			minProjP = projP;
+//		}
+//	}
 
 	return minProjP;
 
