@@ -22,7 +22,7 @@ public:
 	virtual ~SphereNode();
 	SphereNode* merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB);
 	bool canMerge(SphereNode* sphereNodeB, double threshold, UT_BoundingSphere& sphereAB);
-	void distanceTest(UT_Vector3 P);
+//	void distanceTest(UT_Vector3 P);
 	double lowerBound(UT_Vector3 P);
 	double upperBound(UT_Vector3 P);
 

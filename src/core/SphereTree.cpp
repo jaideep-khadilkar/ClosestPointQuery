@@ -98,9 +98,34 @@ const std::vector<SphereNode*>& SphereTree::getCompleteNodeList() const
 	return completeNodeList;
 }
 
-const std::vector<GEO_PrimPoly*>& SphereTree::getFilteredPrims(UT_Vector3 P)
+void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 {
-	double minUpperBound = 100000;
+//	std::cout << "TEST THIS NODE" << std::endl;
+//	std::cout << "minUpperBound : " << minUpperBound << std::endl;
+	if (parent->level == 0)
+	{
+//		std::cout << "TEST THIS LEAF NODE" << std::endl;
+		filterdList.push_back(parent);
+	}
+	else
+	{
+		double localMinUpperBound = std::min(parent->child1->upperBound(P),
+				parent->child2->upperBound(P));
+		if (localMinUpperBound < minUpperBound)
+			minUpperBound = localMinUpperBound;
+		if (parent->child1->lowerBound(P) < minUpperBound)
+			distanceTest(parent->child1, P);
+		if (parent->child1->lowerBound(P) < minUpperBound)
+			distanceTest(parent->child2, P);
+	}
+}
+
+std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
+{
+	minUpperBound = 100000;
+	filterdList.clear();
+	std::cout << "SIZE : " << filterdList.size() << std::endl;
+
 	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
 			it != completeNodeList.end(); ++it)
 	{
@@ -112,7 +137,7 @@ const std::vector<GEO_PrimPoly*>& SphereTree::getFilteredPrims(UT_Vector3 P)
 		}
 	}
 
-	std::cout <<"minUpperBound : " << minUpperBound << std::endl;
+//	std::cout << "minUpperBound : " << minUpperBound << std::endl;
 
 	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
 			it != completeNodeList.end(); ++it)
@@ -122,19 +147,33 @@ const std::vector<GEO_PrimPoly*>& SphereTree::getFilteredPrims(UT_Vector3 P)
 			double lowerBound = (*it)->lowerBound(P);
 			if (lowerBound < minUpperBound)
 			{
-				std::cout << "Test this Sphere" << std::endl;
-				(*it)->distanceTest(P);
+				distanceTest((*it), P);
 			}
-			else
-			{
-				std::cout << "DO NOT TEST" << std::endl;
-			}
+//			else
+//			{
+//				std::cout << "DO NOT TEST" << std::endl;
+//			}
 		}
 
 	}
 
-	std::vector<GEO_PrimPoly*> vec;
-	return vec;
+//	std::cout << filterdList.size() << std::endl;
+
+	std::vector<SphereNode*> fineFilterdList;
+	std::vector<GEO_PrimPoly*> filterdPrims;
+	for (std::vector<core::SphereNode*>::iterator it = filterdList.begin(); it != filterdList.end();
+			++it)
+	{
+		if ((*it)->lowerBound(P) < minUpperBound)
+		{
+			fineFilterdList.push_back((*it));
+			filterdPrims.push_back((*it)->poly);
+		}
+	}
+
+	std::cout << fineFilterdList.size() << std::endl;
+
+	return filterdPrims;
 }
 
 } /* namespace core */

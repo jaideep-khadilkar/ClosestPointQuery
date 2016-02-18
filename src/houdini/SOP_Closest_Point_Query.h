@@ -19,5 +19,9 @@ public:
 	static OP_Node *myConstructor(OP_Network*, const char *, OP_Operator *);
 protected:
 	virtual OP_ERROR cookMySop(OP_Context &context);
+	float THRESHOLD()
+	{
+		return evalFloat("threshold", 0, 0);
+	}
 };
 #endif

@@ -22,7 +22,7 @@ public:
 	virtual ~SphereTree();
 	void initialize(const GU_Detail* inputMesh, double threshold);
 	const std::vector<SphereNode*>& getCompleteNodeList() const;
-	const std::vector<GEO_PrimPoly*>& getFilteredPrims(UT_Vector3 P);
+	std::vector<GEO_PrimPoly*> getFilteredPrims(UT_Vector3 P);
 
 	int getHighestLevel() const
 	{
@@ -30,12 +30,15 @@ public:
 	}
 
 private:
+	void distanceTest(SphereNode* parent,UT_Vector3 P);
+
 	std::vector<SphereNode*> completeNodeList;
 	std::vector<SphereNode*> leafNodes;
 	std::vector<SphereNode*> workingList;
 	std::vector<SphereNode*> filterdList;
 	const GU_Detail* mesh;
 	int highestLevel;
+	double minUpperBound;
 
 	void buildLeafNodes();
 	void buildTree(double threshold);

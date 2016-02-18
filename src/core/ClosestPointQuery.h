@@ -17,13 +17,13 @@ namespace core
 class ClosestPointQuery
 {
 public:
-	ClosestPointQuery(const GU_Detail* mesh);
+	ClosestPointQuery(const GU_Detail* mesh,double threshold);
 	virtual ~ClosestPointQuery();
 	UT_Vector3 getClosestPoint(UT_Vector3 P, double maxDist);
 private:
 	const GU_Detail* mesh;
 	SphereTree tree;
-	UT_Vector3 getProjP(int primNum, const UT_Vector3& P);
+	UT_Vector3 getProjP(GEO_PrimPoly* poly, const UT_Vector3& P);
 };
 
 } /* namespace core */
