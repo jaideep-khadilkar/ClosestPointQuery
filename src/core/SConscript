@@ -3,7 +3,7 @@
 Import('env')
 
 lib_src = [
-			'Sphere.cpp',
+			'SphereNode.cpp',
 			'SphereTree.cpp',
 			'ClosestPointQuery.cpp'
 			]

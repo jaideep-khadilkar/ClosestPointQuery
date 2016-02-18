@@ -5,15 +5,25 @@
  *      Author: user
  */
 
-#include "SphereTree.h"
+#include "SphereNodeTree.h"
 
 namespace core
 {
 
-SphereTree::SphereTree()
+SphereTree::SphereTree(const GU_Detail* mesh) :
+		mesh(mesh)
 {
-	// TODO Auto-generated constructor stub
+	for (int primNum = 0; primNum < mesh->getNumPrimitives(); primNum++)
+	{
+		GEO_PrimPoly* poly = (GEO_PrimPoly*) mesh->getPrimitiveByIndex(primNum);
 
+		UT_BoundingSphere boundingSphere;
+		boundingSphere.addPoint(poly->getPos3(0));
+		boundingSphere.addPoint(poly->getPos3(1));
+		boundingSphere.addPoint(poly->getPos3(2));
+
+		sphereVec.push_back(boundingSphere);
+	}
 }
 
 SphereTree::~SphereTree()
@@ -21,4 +31,15 @@ SphereTree::~SphereTree()
 	// TODO Auto-generated destructor stub
 }
 
+const std::vector<UT_BoundingSphere>& SphereTree::getSphereVec() const
+{
+	return sphereVec;
+}
+
+void SphereTree::setSphereVec(const std::vector<UT_BoundingSphere>& sphereVec)
+{
+	this->sphereVec = sphereVec;
+}
+
 } /* namespace core */
+

@@ -3,6 +3,7 @@
 
 
 #include <SOP/SOP_Node.h>
+#include "UT/UT_BoundingSphere.h"
 
 #define INT_PARM(name, idx, vidx, t)	\
 	    return evalInt(name, &myOffsets[idx], vidx, t);
@@ -19,5 +20,7 @@ public:
 	static OP_Node *myConstructor(OP_Network*, const char *, OP_Operator *);
 protected:
 	virtual OP_ERROR cookMySop(OP_Context &context);
+private:
+	void buildSphereFromBoundingSphere(UT_BoundingSphere boundingSphere);
 };
 #endif

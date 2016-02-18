@@ -5,18 +5,18 @@
  *      Author: user
  */
 
-#include "Sphere.h"
+#include "SphereNode.h"
 
 namespace core
 {
 
-Sphere::Sphere()
+SphereNode::SphereNode()
 {
 	// TODO Auto-generated constructor stub
 
 }
 
-Sphere::~Sphere()
+SphereNode::~SphereNode()
 {
 	// TODO Auto-generated destructor stub
 }

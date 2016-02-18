@@ -8,11 +8,10 @@
 #include <OP/OP_AutoLockInputs.h>
 #include <iostream>
 
-#include "../core/SphereTree.h"
 #include "GEO/GEO_PrimPoly.h"
 #include "GU/GU_PrimSphere.h"
 #include "UT/UT_Matrix3.h"
-#include "UT/UT_BoundingSphere.h"
+#include "../core/SphereNodeTree.h"
 
 void newSopOperator(OP_OperatorTable *table)
 {
@@ -51,25 +50,28 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 	gdp->clearAndDestroy();
 	const GU_Detail* mesh = inputGeo(0);
 
-	for (int primNum = 0; primNum < mesh->getNumPrimitives(); primNum++)
+	core::SphereTree tree(mesh);
+	std::vector<UT_BoundingSphere> sphereVec = tree.getSphereVec();
+
+	for (std::vector<UT_BoundingSphere>::iterator it = sphereVec.begin(); it != sphereVec.end();
+			++it)
 	{
-
-		GEO_PrimPoly* poly = (GEO_PrimPoly*) mesh->getPrimitiveByIndex(primNum);
-
-		UT_BoundingSphere boundingSphere;
-		boundingSphere.addPoint(poly->getPos3(0));
-		boundingSphere.addPoint(poly->getPos3(1));
-		boundingSphere.addPoint(poly->getPos3(2));
-
-		GA_Offset ptoff = gdp->appendPoint();
-		gdp->setPos3(ptoff, boundingSphere.getCenter());
-		GEO_PrimSphere* sphere = (GEO_PrimSphere*) GU_PrimSphere::build(
-				GU_PrimSphereParms(gdp, ptoff));
-		UT_Matrix3 mat;
-		mat.identity();
-		mat.scale(boundingSphere.getRadius(), boundingSphere.getRadius(),
-				boundingSphere.getRadius());
-		sphere->setTransform(mat);
+		UT_BoundingSphere boundingSphere = *it;
+		buildSphereFromBoundingSphere(boundingSphere);
 	}
+
 	return error();
+}
+
+void SOP_Sphere_Tree::buildSphereFromBoundingSphere(UT_BoundingSphere boundingSphere)
+{
+	GA_Offset ptoff = gdp->appendPoint();
+	gdp->setPos3(ptoff, boundingSphere.getCenter());
+	GEO_PrimSphere* sphere = (GEO_PrimSphere*) GU_PrimSphere::build(
+			GU_PrimSphereParms(gdp, ptoff));
+	UT_Matrix3 mat;
+	mat.identity();
+	mat.scale(boundingSphere.getRadius(), boundingSphere.getRadius(),
+			boundingSphere.getRadius());
+	sphere->setTransform(mat);
 }
