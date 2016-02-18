@@ -37,8 +37,10 @@ void SphereTree::buildTree()
 
 	workingList = leafNodes;
 
-	double threshold = 1;
+	double threshold = 2;
 
+	int counter = 1000;
+	size_t size = workingList.size();
 	for (size_t iA = 0; iA < workingList.size(); ++iA)
 	{
 		SphereNode* nodeA = workingList[iA];
@@ -51,15 +53,23 @@ void SphereTree::buildTree()
 				continue;
 			if (nodeA == nodeB)
 				continue;
+			if (iA == iB)
+				continue;
 			UT_BoundingSphere sphereAB;
+			if (counter == 0)
+				continue;
 			if (nodeA->canMerge(nodeB, threshold, sphereAB))
 			{
 				std::cout << "Can Merge !" << std::endl;
+				std::cout << "iA : " << iA << std::endl;
+				std::cout << "iB : " << iB << std::endl;
 				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
 				sphereVec.push_back(sphereAB);
-//				workingList.push_back(mergedNode);
+				workingList.push_back(mergedNode);
 				workingList[iA] = NULL;
 				workingList[iB] = NULL;
+				counter--;
+				break;
 			}
 		}
 	}
