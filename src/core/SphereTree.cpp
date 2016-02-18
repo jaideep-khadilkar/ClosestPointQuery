@@ -39,29 +39,54 @@ void SphereTree::buildTree()
 
 	double threshold = 1;
 
-	for (std::vector<SphereNode*>::iterator itA = workingList.begin(); itA != workingList.end();
-			++itA)
+	for (size_t iA = 0; iA < workingList.size(); ++iA)
 	{
-		if (*itA == NULL)
+		SphereNode* nodeA = workingList[iA];
+		if (nodeA == NULL)
 			continue;
-		for (std::vector<SphereNode*>::iterator itB = workingList.begin(); itB != workingList.end();
-				++itB)
+		for (size_t iB = 0; iB < workingList.size(); ++iB)
 		{
-			if (*itB == NULL)
+			SphereNode* nodeB = workingList[iB];
+			if (nodeB == NULL)
 				continue;
-			if (*itA == *itB)
+			if (nodeA == nodeB)
 				continue;
-//			UT_BoundingSphere sphereAB;
-//			if ((*itA)->canMerge(*itB, threshold, sphereAB))
-//			{
-//				std::cout << "Can Merge !" << std::endl;
-//				SphereNode* mergedNode = (*itA)->merge(*itB, sphereAB);
-////				workingList.push_back(mergedNode);
-//				*itA = NULL;
-//				*itB = NULL;
-//			}
+			UT_BoundingSphere sphereAB;
+			if (nodeA->canMerge(nodeB, threshold, sphereAB))
+			{
+				std::cout << "Can Merge !" << std::endl;
+				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
+				sphereVec.push_back(sphereAB);
+//				workingList.push_back(mergedNode);
+				workingList[iA] = NULL;
+				workingList[iB] = NULL;
+			}
 		}
 	}
+
+//		for (std::vector<SphereNode*>::iterator itA = workingList.begin(); itA != workingList.end();
+//				++itA)
+//		{
+//			if (*itA == NULL)
+//				continue;
+//			for (std::vector<SphereNode*>::iterator itB = workingList.begin();
+//					itB != workingList.end(); ++itB)
+//			{
+//				if (*itB == NULL)
+//					continue;
+//				if (*itA == *itB)
+//					continue;
+////			UT_BoundingSphere sphereAB;
+////			if ((*itA)->canMerge(*itB, threshold, sphereAB))
+////			{
+////				std::cout << "Can Merge !" << std::endl;
+////				SphereNode* mergedNode = (*itA)->merge(*itB, sphereAB);
+//////				workingList.push_back(mergedNode);
+////				*itA = NULL;
+////				*itB = NULL;
+////			}
+//			}
+//		}
 
 }
 

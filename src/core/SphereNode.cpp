@@ -33,7 +33,7 @@ SphereNode* SphereNode::merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereA
 	return mergedNode;
 }
 
-bool SphereNode::canMerge(SphereNode* sphereNodeB, double threshold, UT_BoundingSphere sphereAB)
+bool SphereNode::canMerge(SphereNode* sphereNodeB, double threshold, UT_BoundingSphere& sphereAB)
 {
 	double rA = sphere.getRadius();
 	double rB = sphereNodeB->sphere.getRadius();
