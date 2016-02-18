@@ -18,7 +18,7 @@ namespace core
 class SphereNode
 {
 public:
-	SphereNode(UT_BoundingSphere sphere, GEO_PrimPoly* poly);
+	SphereNode(UT_BoundingSphere sphere, GEO_PrimPoly* poly,int level);
 	virtual ~SphereNode();
 	SphereNode* merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB);
 	bool canMerge(SphereNode* sphereNodeB, double threshold, UT_BoundingSphere& sphereAB);
@@ -27,6 +27,7 @@ public:
 	SphereNode* child1;
 	SphereNode* child2;
 	GEO_PrimPoly* poly;
+	int level;
 };
 
 } /* namespace core */

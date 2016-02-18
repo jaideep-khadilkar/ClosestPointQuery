@@ -10,8 +10,8 @@
 namespace core
 {
 
-SphereNode::SphereNode(UT_BoundingSphere sphere, GEO_PrimPoly* poly) :
-		sphere(sphere), poly(poly)
+SphereNode::SphereNode(UT_BoundingSphere sphere, GEO_PrimPoly* poly,int level) :
+		sphere(sphere), poly(poly),level(level)
 {
 	parent = NULL;
 	child1 = NULL;
@@ -25,7 +25,7 @@ SphereNode::~SphereNode()
 
 SphereNode* SphereNode::merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB)
 {
-	SphereNode* mergedNode = new SphereNode(sphereAB, NULL);
+	SphereNode* mergedNode = new SphereNode(sphereAB, NULL,std::max(this->level,sphereNodeB->level)+1);
 	mergedNode->child1 = this;
 	mergedNode->child2 = sphereNodeB;
 	this->parent = mergedNode;

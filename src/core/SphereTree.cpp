@@ -26,9 +26,9 @@ void SphereTree::buildLeafNodes()
 		boundingSphere.addPoint(poly->getPos3(0));
 		boundingSphere.addPoint(poly->getPos3(1));
 		boundingSphere.addPoint(poly->getPos3(2));
-		SphereNode* sphereNode = new SphereNode(boundingSphere, poly);
+		SphereNode* sphereNode = new SphereNode(boundingSphere, poly, 0);
 		leafNodes.push_back(sphereNode);
-		sphereVec.push_back(boundingSphere);
+		allSphereList.push_back(sphereNode);
 	}
 }
 
@@ -64,7 +64,8 @@ void SphereTree::buildTree()
 				std::cout << "iA : " << iA << std::endl;
 				std::cout << "iB : " << iB << std::endl;
 				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
-				sphereVec.push_back(sphereAB);
+				std::cout << "Level : " << mergedNode->level << std::endl;
+				allSphereList.push_back(mergedNode);
 				workingList.push_back(mergedNode);
 				workingList[iA] = NULL;
 				workingList[iB] = NULL;
@@ -73,31 +74,6 @@ void SphereTree::buildTree()
 			}
 		}
 	}
-
-//		for (std::vector<SphereNode*>::iterator itA = workingList.begin(); itA != workingList.end();
-//				++itA)
-//		{
-//			if (*itA == NULL)
-//				continue;
-//			for (std::vector<SphereNode*>::iterator itB = workingList.begin();
-//					itB != workingList.end(); ++itB)
-//			{
-//				if (*itB == NULL)
-//					continue;
-//				if (*itA == *itB)
-//					continue;
-////			UT_BoundingSphere sphereAB;
-////			if ((*itA)->canMerge(*itB, threshold, sphereAB))
-////			{
-////				std::cout << "Can Merge !" << std::endl;
-////				SphereNode* mergedNode = (*itA)->merge(*itB, sphereAB);
-//////				workingList.push_back(mergedNode);
-////				*itA = NULL;
-////				*itB = NULL;
-////			}
-//			}
-//		}
-
 }
 
 SphereTree::~SphereTree()
@@ -108,14 +84,14 @@ SphereTree::~SphereTree()
 	}
 }
 
-const std::vector<UT_BoundingSphere>& SphereTree::getSphereVec() const
+const std::vector<SphereNode*>& SphereTree::getSphereVec() const
 {
-	return sphereVec;
+	return allSphereList;
 }
 
-void SphereTree::setSphereVec(const std::vector<UT_BoundingSphere>& sphereVec)
+void SphereTree::setSphereVec(const std::vector<SphereNode*>& sphereVec)
 {
-	this->sphereVec = sphereVec;
+	this->allSphereList = sphereVec;
 }
 
 } /* namespace core */

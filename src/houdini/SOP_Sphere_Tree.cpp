@@ -23,8 +23,11 @@ void newSopOperator(OP_OperatorTable *table)
 					0));
 }
 
+static PRM_Name names[] =
+{ PRM_Name("level", "Level") };
+
 PRM_Template SOP_Sphere_Tree::myTemplateList[] =
-{ PRM_Template(), };
+{ PRM_Template(PRM_INT, 1, &names[0], PRMzeroDefaults),PRM_Template(), };
 
 OP_Node *
 SOP_Sphere_Tree::myConstructor(OP_Network *net, const char *name, OP_Operator *op)
@@ -52,13 +55,16 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 	const GU_Detail* mesh = inputGeo(0);
 
 	core::SphereTree tree(mesh);
-	std::vector<UT_BoundingSphere> sphereVec = tree.getSphereVec();
+	std::vector<core::SphereNode*> sphereVec = tree.getSphereVec();
 
-	for (std::vector<UT_BoundingSphere>::iterator it = sphereVec.begin(); it != sphereVec.end();
+	for (std::vector<core::SphereNode*>::iterator it = sphereVec.begin(); it != sphereVec.end();
 			++it)
 	{
-		UT_BoundingSphere boundingSphere = *it;
-		buildSphereFromBoundingSphere(boundingSphere);
+		if ((*it)->level == LEVEL())
+		{
+			UT_BoundingSphere boundingSphere = (*it)->sphere;
+			buildSphereFromBoundingSphere(boundingSphere);
+		}
 	}
 
 	return error();
@@ -68,11 +74,9 @@ void SOP_Sphere_Tree::buildSphereFromBoundingSphere(UT_BoundingSphere boundingSp
 {
 	GA_Offset ptoff = gdp->appendPoint();
 	gdp->setPos3(ptoff, boundingSphere.getCenter());
-	GEO_PrimSphere* sphere = (GEO_PrimSphere*) GU_PrimSphere::build(
-			GU_PrimSphereParms(gdp, ptoff));
+	GEO_PrimSphere* sphere = (GEO_PrimSphere*) GU_PrimSphere::build(GU_PrimSphereParms(gdp, ptoff));
 	UT_Matrix3 mat;
 	mat.identity();
-	mat.scale(boundingSphere.getRadius(), boundingSphere.getRadius(),
-			boundingSphere.getRadius());
+	mat.scale(boundingSphere.getRadius(), boundingSphere.getRadius(), boundingSphere.getRadius());
 	sphere->setTransform(mat);
 }

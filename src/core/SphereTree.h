@@ -19,11 +19,11 @@ class SphereTree
 public:
 	SphereTree(const GU_Detail* mesh);
 	virtual ~SphereTree();
-	const std::vector<UT_BoundingSphere>& getSphereVec() const;
-	void setSphereVec(const std::vector<UT_BoundingSphere>& sphereVec);
+	const std::vector<SphereNode*>& getSphereVec() const;
+	void setSphereVec(const std::vector<SphereNode*>& sphereVec);
 
 private:
-	std::vector<UT_BoundingSphere> sphereVec;
+	std::vector<SphereNode*> allSphereList;
 	std::vector<SphereNode*> leafNodes;
 	std::vector<SphereNode*> workingList;
 	const GU_Detail* mesh;

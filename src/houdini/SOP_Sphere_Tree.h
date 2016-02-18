@@ -22,5 +22,9 @@ protected:
 	virtual OP_ERROR cookMySop(OP_Context &context);
 private:
 	void buildSphereFromBoundingSphere(UT_BoundingSphere boundingSphere);
+	int LEVEL()
+	{
+		return evalInt("level", 0, 0);
+	}
 };
 #endif
