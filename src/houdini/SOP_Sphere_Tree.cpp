@@ -18,8 +18,8 @@ void newSopOperator(OP_OperatorTable *table)
 {
 	table->addOperator(
 			new OP_Operator("sphere_tree", "Sphere Tree", SOP_Sphere_Tree::myConstructor,
-					SOP_Sphere_Tree::myTemplateList, 1, // Min required sources
-					1,	// Maximum sources
+					SOP_Sphere_Tree::myTemplateList, 2, // Min required sources
+					2,	// Maximum sources
 					0));
 }
 
@@ -54,6 +54,7 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 
 	gdp->clearAndDestroy();
 	const GU_Detail* mesh = inputGeo(0);
+	const GU_Detail* pointsGdp = inputGeo(1);
 
 	core::SphereTree tree;
 	tree.initialize(mesh, THRESHOLD());

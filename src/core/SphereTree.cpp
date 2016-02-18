@@ -123,8 +123,8 @@ void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 {
 	minUpperBound = 100000;
-	filterdList.clear();
-	std::cout << "SIZE : " << filterdList.size() << std::endl;
+//	filterdList.clear();
+//	std::cout << "SIZE : " << filterdList.size() << std::endl;
 
 	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
 			it != completeNodeList.end(); ++it)

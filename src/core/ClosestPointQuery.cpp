@@ -11,10 +11,10 @@
 namespace core
 {
 
-ClosestPointQuery::ClosestPointQuery(const GU_Detail* mesh,double threshold) :
+ClosestPointQuery::ClosestPointQuery(const GU_Detail* mesh, double threshold) :
 		mesh(mesh)
 {
-	tree.initialize(mesh,threshold);
+	tree.initialize(mesh, threshold);
 }
 
 ClosestPointQuery::~ClosestPointQuery()
@@ -137,12 +137,25 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 
 	std::vector<GEO_PrimPoly*> filteredList = tree.getFilteredPrims(P);
 
-	for (std::vector<GEO_PrimPoly*>::iterator it = filteredList.begin();
-				it != filteredList.end(); ++it)
+//	for (std::vector<GEO_PrimPoly*>::iterator it = filteredList.begin();
+//				it != filteredList.end(); ++it)
+//	{
+//		UT_Vector3 projP = getProjP(*it, P);
+//		double dist = projP.distance(P);
+//		if(dist<minDist)
+//		{
+//			minDist = dist;
+//			minProjP = projP;
+//		}
+//	}
+
+	GEO_Primitive* prim;
+	GA_FOR_ALL_PRIMITIVES(mesh,prim)
 	{
-		UT_Vector3 projP = getProjP(*it, P);
+		GEO_PrimPoly* poly = (GEO_PrimPoly*) prim;
+		UT_Vector3 projP = getProjP(poly, P);
 		double dist = projP.distance(P);
-		if(dist<minDist)
+		if (dist < minDist)
 		{
 			minDist = dist;
 			minProjP = projP;
