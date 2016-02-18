@@ -115,7 +115,7 @@ void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 			minUpperBound = localMinUpperBound;
 		if (parent->child1->lowerBound(P) < minUpperBound)
 			distanceTest(parent->child1, P);
-		if (parent->child1->lowerBound(P) < minUpperBound)
+		if (parent->child2->lowerBound(P) < minUpperBound)
 			distanceTest(parent->child2, P);
 	}
 }
@@ -126,10 +126,12 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 	filterdList.clear();
 //	std::cout << "SIZE : " << filterdList.size() << std::endl;
 
-	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
-			it != completeNodeList.end(); ++it)
+	for (std::vector<core::SphereNode*>::iterator it = workingList.begin();
+			it != workingList.end(); ++it)
 	{
-		if ((*it)->level == highestLevel)
+		if ((*it) == NULL)
+			continue;
+//		if ((*it)->level == highestLevel)
 		{
 			double upperBound = (*it)->upperBound(P);
 			if (upperBound < minUpperBound)
@@ -139,10 +141,12 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 
 //	std::cout << "minUpperBound : " << minUpperBound << std::endl;
 
-	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
-			it != completeNodeList.end(); ++it)
+	for (std::vector<core::SphereNode*>::iterator it = workingList.begin();
+			it != workingList.end(); ++it)
 	{
-		if ((*it)->level == highestLevel)
+		if ((*it) == NULL)
+			continue;
+//		if ((*it)->level == highestLevel)
 		{
 			double lowerBound = (*it)->lowerBound(P);
 			if (lowerBound < minUpperBound)
@@ -176,17 +180,18 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 	return filterdPrims;
 }
 
-
 std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
 {
 	minUpperBound = 100000;
 	filterdList.clear();
 //	std::cout << "SIZE : " << filterdList.size() << std::endl;
 
-	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
-			it != completeNodeList.end(); ++it)
+	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
+			++it)
 	{
-		if ((*it)->level == highestLevel)
+		if ((*it) == NULL)
+			continue;
+//		if ((*it)->level == highestLevel)
 		{
 			double upperBound = (*it)->upperBound(P);
 			if (upperBound < minUpperBound)
@@ -196,10 +201,12 @@ std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
 
 //	std::cout << "minUpperBound : " << minUpperBound << std::endl;
 
-	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
-			it != completeNodeList.end(); ++it)
+	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
+			++it)
 	{
-		if ((*it)->level == highestLevel)
+		if ((*it) == NULL)
+			continue;
+//		if ((*it)->level == highestLevel)
 		{
 			double lowerBound = (*it)->lowerBound(P);
 			if (lowerBound < minUpperBound)
