@@ -9,6 +9,7 @@
 #define CORE_SPHERETREE_H_
 
 #include "GU/GU_Detail.h"
+#include "GEO/GEO_PrimPoly.h"
 #include "SphereNode.h"
 
 namespace core
@@ -17,19 +18,27 @@ namespace core
 class SphereTree
 {
 public:
-	SphereTree(const GU_Detail* mesh);
+	SphereTree();
 	virtual ~SphereTree();
-	const std::vector<SphereNode*>& getSphereVec() const;
-	void setSphereVec(const std::vector<SphereNode*>& sphereVec);
+	void initialize(const GU_Detail* inputMesh, double threshold);
+	const std::vector<SphereNode*>& getCompleteNodeList() const;
+	const std::vector<GEO_PrimPoly*>& getFilteredPrims(UT_Vector3 P);
+
+	int getHighestLevel() const
+	{
+		return highestLevel;
+	}
 
 private:
-	std::vector<SphereNode*> allSphereList;
+	std::vector<SphereNode*> completeNodeList;
 	std::vector<SphereNode*> leafNodes;
 	std::vector<SphereNode*> workingList;
+	std::vector<SphereNode*> filterdList;
 	const GU_Detail* mesh;
+	int highestLevel;
 
 	void buildLeafNodes();
-	void buildTree();
+	void buildTree(double threshold);
 };
 
 } /* namespace core */

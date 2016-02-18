@@ -24,10 +24,11 @@ void newSopOperator(OP_OperatorTable *table)
 }
 
 static PRM_Name names[] =
-{ PRM_Name("level", "Level") };
+{ PRM_Name("level", "Level"), PRM_Name("threshold", "Threshold") };
 
 PRM_Template SOP_Sphere_Tree::myTemplateList[] =
-{ PRM_Template(PRM_INT, 1, &names[0], PRMzeroDefaults),PRM_Template(), };
+{ PRM_Template(PRM_INT, 1, &names[0], PRMzeroDefaults), PRM_Template(PRM_INT, 1, &names[1],
+		PRMoneDefaults), PRM_Template(), };
 
 OP_Node *
 SOP_Sphere_Tree::myConstructor(OP_Network *net, const char *name, OP_Operator *op)
@@ -54,11 +55,12 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 	gdp->clearAndDestroy();
 	const GU_Detail* mesh = inputGeo(0);
 
-	core::SphereTree tree(mesh);
-	std::vector<core::SphereNode*> sphereVec = tree.getSphereVec();
+	core::SphereTree tree;
+	tree.initialize(mesh, THRESHOLD());
+	std::vector<core::SphereNode*> completeNodeList = tree.getCompleteNodeList();
 
-	for (std::vector<core::SphereNode*>::iterator it = sphereVec.begin(); it != sphereVec.end();
-			++it)
+	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+			it != completeNodeList.end(); ++it)
 	{
 		if ((*it)->level == LEVEL())
 		{

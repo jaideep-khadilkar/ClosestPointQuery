@@ -26,5 +26,9 @@ private:
 	{
 		return evalInt("level", 0, 0);
 	}
+	int THRESHOLD()
+	{
+		return evalInt("threshold", 0, 0);
+	}
 };
 #endif

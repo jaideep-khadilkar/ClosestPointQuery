@@ -10,11 +10,16 @@
 namespace core
 {
 
-SphereTree::SphereTree(const GU_Detail* mesh) :
-		mesh(mesh)
+SphereTree::SphereTree()
 {
+	highestLevel = 0;
+}
+
+void SphereTree::initialize(const GU_Detail* inputMesh, double threshold)
+{
+	mesh = inputMesh;
 	buildLeafNodes();
-	buildTree();
+	buildTree(threshold);
 }
 
 void SphereTree::buildLeafNodes()
@@ -28,18 +33,18 @@ void SphereTree::buildLeafNodes()
 		boundingSphere.addPoint(poly->getPos3(2));
 		SphereNode* sphereNode = new SphereNode(boundingSphere, poly, 0);
 		leafNodes.push_back(sphereNode);
-		allSphereList.push_back(sphereNode);
+		completeNodeList.push_back(sphereNode);
 	}
 }
 
-void SphereTree::buildTree()
+void SphereTree::buildTree(double threshold)
 {
 
 	workingList = leafNodes;
 
-	double threshold = 2;
+//	double threshold = 3;
 
-	int counter = 1000;
+	int counter = 10000;
 	size_t size = workingList.size();
 	for (size_t iA = 0; iA < workingList.size(); ++iA)
 	{
@@ -57,15 +62,19 @@ void SphereTree::buildTree()
 				continue;
 			UT_BoundingSphere sphereAB;
 			if (counter == 0)
+			{
+				std::cout << "COUNTER ZERO !" << std::endl;
 				continue;
+			}
 			if (nodeA->canMerge(nodeB, threshold, sphereAB))
 			{
-				std::cout << "Can Merge !" << std::endl;
-				std::cout << "iA : " << iA << std::endl;
-				std::cout << "iB : " << iB << std::endl;
+//				std::cout << "Can Merge !" << std::endl;
+//				std::cout << "iA : " << iA << std::endl;
+//				std::cout << "iB : " << iB << std::endl;
 				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
-				std::cout << "Level : " << mergedNode->level << std::endl;
-				allSphereList.push_back(mergedNode);
+				highestLevel = std::max(highestLevel, mergedNode->level);
+//				std::cout << "Level : " << mergedNode->level << std::endl;
+				completeNodeList.push_back(mergedNode);
 				workingList.push_back(mergedNode);
 				workingList[iA] = NULL;
 				workingList[iB] = NULL;
@@ -84,14 +93,48 @@ SphereTree::~SphereTree()
 	}
 }
 
-const std::vector<SphereNode*>& SphereTree::getSphereVec() const
+const std::vector<SphereNode*>& SphereTree::getCompleteNodeList() const
 {
-	return allSphereList;
+	return completeNodeList;
 }
 
-void SphereTree::setSphereVec(const std::vector<SphereNode*>& sphereVec)
+const std::vector<GEO_PrimPoly*>& SphereTree::getFilteredPrims(UT_Vector3 P)
 {
-	this->allSphereList = sphereVec;
+	double minUpperBound = 100000;
+	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+			it != completeNodeList.end(); ++it)
+	{
+		if ((*it)->level == highestLevel)
+		{
+			double upperBound = (*it)->upperBound(P);
+			if (upperBound < minUpperBound)
+				minUpperBound = upperBound;
+		}
+	}
+
+	std::cout <<"minUpperBound : " << minUpperBound << std::endl;
+
+	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+			it != completeNodeList.end(); ++it)
+	{
+		if ((*it)->level == highestLevel)
+		{
+			double lowerBound = (*it)->lowerBound(P);
+			if (lowerBound < minUpperBound)
+			{
+				std::cout << "Test this Sphere" << std::endl;
+				(*it)->distanceTest(P);
+			}
+			else
+			{
+				std::cout << "DO NOT TEST" << std::endl;
+			}
+		}
+
+	}
+
+	std::vector<GEO_PrimPoly*> vec;
+	return vec;
 }
 
 } /* namespace core */

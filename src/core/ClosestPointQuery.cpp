@@ -14,8 +14,7 @@ namespace core
 ClosestPointQuery::ClosestPointQuery(const GU_Detail* mesh) :
 		mesh(mesh)
 {
-	// TODO Auto-generated constructor stub
-
+	tree.initialize(mesh,5);
 }
 
 ClosestPointQuery::~ClosestPointQuery()
@@ -147,6 +146,12 @@ UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
 			closestPrimNum = primNum;
 		}
 	}
+
+
+	tree.getFilteredPrims(P);
+
+
+
 	return getProjP(closestPrimNum, P);
 
 }
