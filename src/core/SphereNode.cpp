@@ -23,14 +23,14 @@ SphereNode::~SphereNode()
 	// TODO Auto-generated destructor stub
 }
 
-SphereNode& SphereNode::merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB)
+SphereNode* SphereNode::merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB)
 {
 	SphereNode* mergedNode = new SphereNode(sphereAB, NULL);
 	mergedNode->child1 = this;
 	mergedNode->child2 = sphereNodeB;
 	this->parent = mergedNode;
 	sphereNodeB->parent = mergedNode;
-	return *mergedNode;
+	return mergedNode;
 }
 
 bool SphereNode::canMerge(SphereNode* sphereNodeB, double threshold, UT_BoundingSphere sphereAB)

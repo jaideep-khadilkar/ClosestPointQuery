@@ -20,7 +20,7 @@ class SphereNode
 public:
 	SphereNode(UT_BoundingSphere sphere, GEO_PrimPoly* poly);
 	virtual ~SphereNode();
-	SphereNode& merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB);
+	SphereNode* merge(SphereNode* sphereNodeB, UT_BoundingSphere sphereAB);
 	bool canMerge(SphereNode* sphereNodeB, double threshold, UT_BoundingSphere sphereAB);
 	UT_BoundingSphere sphere;
 	SphereNode* parent;
