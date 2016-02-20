@@ -24,7 +24,7 @@ static PRM_Name names[] =
 { PRM_Name("threshold", "Threshold") };
 
 PRM_Template SOP_Closest_Point_Query::myTemplateList[] =
-{ PRM_Template(PRM_FLT, 1, &names[0], PRMoneDefaults), PRM_Template(), };
+{ PRM_Template(PRM_FLT, 1, &names[0], PRMtenDefaults), PRM_Template(), };
 
 OP_Node *
 SOP_Closest_Point_Query::myConstructor(OP_Network *net, const char *name, OP_Operator *op)
@@ -56,16 +56,18 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 	GA_Offset ptoff;
 	GA_Attribute* pscale = gdp->findPointAttribute("pscale");
 	GA_ROHandleF pscale_handle(pscale);
+
+	// For each point, find the closest point on the mesh.
 	GA_FOR_ALL_PTOFF(gdp, ptoff)
 	{
 		UT_Vector3 pos = gdp->getPos3(ptoff);
-		double maxRadius = 1;
+		double maxRadius = DBL_MAX;
 		if (pscale_handle.isValid())
 		{
 			maxRadius = pscale_handle.get(ptoff);
 		}
-		UT_Vector3 new_pos = query.getClosestPoint(pos, maxRadius);
-		gdp->setPos3(ptoff, new_pos);
+		UT_Vector3 closest_point_pos = query(pos, maxRadius);
+		gdp->setPos3(ptoff, closest_point_pos);
 	}
 
 	return error();

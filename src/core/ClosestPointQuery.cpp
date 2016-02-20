@@ -31,7 +31,7 @@ double clamp(double val, double min, double max)
 	return val;
 }
 
-UT_Vector3 ClosestPointQuery::getProjP(GEO_PrimPoly* poly, const UT_Vector3& P)
+UT_Vector3 ClosestPointQuery::projectOntoTriangle(const UT_Vector3& P, GEO_PrimPoly* poly)
 {
 //	GEO_PrimPoly* poly = (GEO_PrimPoly*) (mesh->getPrimitiveByIndex(primNum));
 	UT_Vector3 p0 = poly->getPos3(0);
@@ -129,27 +129,27 @@ UT_Vector3 ClosestPointQuery::getProjP(GEO_PrimPoly* poly, const UT_Vector3& P)
 	return projP;
 }
 
-UT_Vector3 ClosestPointQuery::getClosestPoint(UT_Vector3 P, double maxDist)
+UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
 {
 
 	double minDist = maxDist;
-	UT_Vector3 minProjP = P;
+	UT_Vector3 minProjectedPos = P;
 
 	std::vector<GEO_PrimPoly*> filteredList = tree.getFilteredPrims(P);
 
 	for (std::vector<GEO_PrimPoly*>::iterator it = filteredList.begin(); it != filteredList.end();
 			++it)
 	{
-		UT_Vector3 projP = getProjP(*it, P);
-		double dist = projP.distance(P);
+		UT_Vector3 projectedPos = projectOntoTriangle(P, *it);
+		double dist = projectedPos.distance(P);
 		if (dist < minDist)
 		{
 			minDist = dist;
-			minProjP = projP;
+			minProjectedPos = projectedPos;
 		}
 	}
 
-	return minProjP;
+	return minProjectedPos;
 
 }
 
