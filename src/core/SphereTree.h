@@ -1,10 +1,3 @@
-/*
- * SphereTree.h
- *
- *  Created on: 18-Feb-2016
- *      Author: user
- */
-
 #ifndef CORE_SPHERETREE_H_
 #define CORE_SPHERETREE_H_
 
@@ -22,8 +15,8 @@ public:
 	virtual ~SphereTree();
 	void initialize(const GU_Detail* inputMesh, double threshold);
 	const std::vector<SphereNode*>& getCompleteNodeList() const;
-	std::vector<GEO_PrimPoly*> getFilteredPrims(UT_Vector3 P);
-	std::vector<SphereNode*> getFilteredSpheres(UT_Vector3 P);
+	void getFilteredPrimList(UT_Vector3 P, std::vector<SphereNode*>& fineFilterdList,
+			std::vector<GEO_PrimPoly*>& filterdPrims);
 
 	int getHighestLevel() const
 	{
@@ -31,7 +24,7 @@ public:
 	}
 
 private:
-	void distanceTest(SphereNode* parent,UT_Vector3 P);
+	void distanceTest(SphereNode* parent, UT_Vector3 P);
 
 	std::vector<SphereNode*> completeNodeList;
 	std::vector<SphereNode*> leafNodes;

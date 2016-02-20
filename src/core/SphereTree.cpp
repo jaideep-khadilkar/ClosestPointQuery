@@ -1,10 +1,3 @@
-/*
- * SphereTree.cpp
- *
- *  Created on: 18-Feb-2016
- *      Author: user
- */
-
 #include "SphereTree.h"
 
 namespace core
@@ -80,7 +73,8 @@ void SphereTree::buildTree(double threshold)
 
 SphereTree::~SphereTree()
 {
-	for (std::vector<SphereNode*>::iterator it = leafNodes.begin(); it != leafNodes.end(); ++it)
+	for (std::vector<SphereNode*>::iterator it = completeNodeList.begin();
+			it != completeNodeList.end(); ++it)
 	{
 		delete *it;
 	}
@@ -110,9 +104,10 @@ void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 	}
 }
 
-std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
+void SphereTree::getFilteredPrimList(UT_Vector3 P, std::vector<SphereNode*>& filteredNodeList,
+		std::vector<GEO_PrimPoly*>& filteredPrimList)
 {
-	minUpperBound = 100000;
+	minUpperBound = DBL_MAX;
 	filterdList.clear();
 
 	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
@@ -142,66 +137,17 @@ std::vector<GEO_PrimPoly*> SphereTree::getFilteredPrims(UT_Vector3 P)
 
 	}
 
-	std::vector<SphereNode*> fineFilterdList;
-	std::vector<GEO_PrimPoly*> filterdPrims;
 	for (std::vector<core::SphereNode*>::iterator it = filterdList.begin(); it != filterdList.end();
 			++it)
 	{
 		if ((*it)->lowerBound(P) < minUpperBound)
 		{
-			fineFilterdList.push_back((*it));
-			filterdPrims.push_back((*it)->poly);
+			filteredNodeList.push_back((*it));
+			filteredPrimList.push_back((*it)->poly);
 		}
 	}
 
-	return filterdPrims;
-}
-
-std::vector<SphereNode*> SphereTree::getFilteredSpheres(UT_Vector3 P)
-{
-	minUpperBound = 100000;
-	filterdList.clear();
-
-	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
-			++it)
-	{
-		if ((*it) == NULL)
-			continue;
-		{
-			double upperBound = (*it)->upperBound(P);
-			if (upperBound < minUpperBound)
-				minUpperBound = upperBound;
-		}
-	}
-
-	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
-			++it)
-	{
-		if ((*it) == NULL)
-			continue;
-		{
-			double lowerBound = (*it)->lowerBound(P);
-			if (lowerBound < minUpperBound)
-			{
-				distanceTest((*it), P);
-			}
-		}
-
-	}
-
-	std::vector<SphereNode*> fineFilterdList;
-	std::vector<GEO_PrimPoly*> filterdPrims;
-	for (std::vector<core::SphereNode*>::iterator it = filterdList.begin(); it != filterdList.end();
-			++it)
-	{
-		if ((*it)->lowerBound(P) < minUpperBound)
-		{
-			fineFilterdList.push_back((*it));
-			filterdPrims.push_back((*it)->poly);
-		}
-	}
-
-	return fineFilterdList;
+	return;
 }
 
 } /* namespace core */

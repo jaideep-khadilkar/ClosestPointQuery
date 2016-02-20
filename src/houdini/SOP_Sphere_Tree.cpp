@@ -28,7 +28,7 @@ static PRM_Name names[] =
 
 PRM_Template SOP_Sphere_Tree::myTemplateList[] =
 { PRM_Template(PRM_INT, 1, &names[0], PRMzeroDefaults), PRM_Template(PRM_INT, 1, &names[1],
-		PRMoneDefaults), PRM_Template(), };
+		PRMtenDefaults), PRM_Template(), };
 
 OP_Node *
 SOP_Sphere_Tree::myConstructor(OP_Network *net, const char *name, OP_Operator *op)
@@ -56,9 +56,9 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 	const GU_Detail* mesh = inputGeo(0);
 	const GU_Detail* pointsGdp = inputGeo(1);
 
-	core::SphereTree tree;
-	tree.initialize(mesh, THRESHOLD());
-	std::vector<core::SphereNode*> completeNodeList = tree.getCompleteNodeList();
+	core::SphereTree sphereTree;
+	sphereTree.initialize(mesh, THRESHOLD());
+	std::vector<core::SphereNode*> completeNodeList = sphereTree.getCompleteNodeList();
 
 //	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
 //			it != completeNodeList.end(); ++it)
@@ -74,10 +74,13 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 	{
 		GA_Offset ptoff = pointsGdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(i);
 		UT_Vector3 P = pointsGdp->getPos3(ptoff);
-		std::vector<core::SphereNode*> filteredList = tree.getFilteredSpheres(P);
 
-		for (std::vector<core::SphereNode*>::iterator it = filteredList.begin();
-				it != filteredList.end(); ++it)
+		std::vector<GEO_PrimPoly*> filteredPrimList;
+		std::vector<core::SphereNode*> filteredNodeList;
+		sphereTree.getFilteredPrimList(P, filteredNodeList,filteredPrimList);
+
+		for (std::vector<core::SphereNode*>::iterator it = filteredNodeList.begin();
+				it != filteredNodeList.end(); ++it)
 		{
 			if ((*it)->level == LEVEL())
 			{

@@ -1,10 +1,3 @@
-/*
- * ClosestPointQuery.cpp
- *
- *  Created on: 17-Feb-2016
- *      Author: user
- */
-
 #include "ClosestPointQuery.h"
 #include "GEO/GEO_PrimPoly.h"
 
@@ -14,12 +7,38 @@ namespace core
 ClosestPointQuery::ClosestPointQuery(const GU_Detail* mesh, double threshold) :
 		mesh(mesh)
 {
-	tree.initialize(mesh, threshold);
+	sphereTree.initialize(mesh, threshold);
 }
 
 ClosestPointQuery::~ClosestPointQuery()
 {
 	// TODO Auto-generated destructor stub
+}
+
+UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
+{
+
+	double minDist = maxDist;
+	UT_Vector3 minProjectedPos = P;
+
+	std::vector<GEO_PrimPoly*> filteredPrimList;
+	std::vector<SphereNode*> filteredNodeList;
+	sphereTree.getFilteredPrimList(P, filteredNodeList,filteredPrimList);
+
+	for (std::vector<GEO_PrimPoly*>::iterator it = filteredPrimList.begin();
+			it != filteredPrimList.end(); ++it)
+	{
+		UT_Vector3 projectedPos = projectOntoTriangle(P, *it);
+		double dist = projectedPos.distance(P);
+		if (dist < minDist)
+		{
+			minDist = dist;
+			minProjectedPos = projectedPos;
+		}
+	}
+
+	return minProjectedPos;
+
 }
 
 double clamp(double val, double min, double max)
@@ -33,7 +52,6 @@ double clamp(double val, double min, double max)
 
 UT_Vector3 ClosestPointQuery::projectOntoTriangle(const UT_Vector3& P, GEO_PrimPoly* poly)
 {
-//	GEO_PrimPoly* poly = (GEO_PrimPoly*) (mesh->getPrimitiveByIndex(primNum));
 	UT_Vector3 p0 = poly->getPos3(0);
 	UT_Vector3 p1 = poly->getPos3(1);
 	UT_Vector3 p2 = poly->getPos3(2);
@@ -127,30 +145,6 @@ UT_Vector3 ClosestPointQuery::projectOntoTriangle(const UT_Vector3& P, GEO_PrimP
 	}
 	UT_Vector3 projP = p0 + s * edge0 + t * edge1;
 	return projP;
-}
-
-UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
-{
-
-	double minDist = maxDist;
-	UT_Vector3 minProjectedPos = P;
-
-	std::vector<GEO_PrimPoly*> filteredList = tree.getFilteredPrims(P);
-
-	for (std::vector<GEO_PrimPoly*>::iterator it = filteredList.begin(); it != filteredList.end();
-			++it)
-	{
-		UT_Vector3 projectedPos = projectOntoTriangle(P, *it);
-		double dist = projectedPos.distance(P);
-		if (dist < minDist)
-		{
-			minDist = dist;
-			minProjectedPos = projectedPos;
-		}
-	}
-
-	return minProjectedPos;
-
 }
 
 } /* namespace core */
