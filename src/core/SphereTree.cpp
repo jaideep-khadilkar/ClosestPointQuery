@@ -35,7 +35,7 @@ void SphereTree::buildTree(double threshold)
 
 	workingList = leafNodes;
 
-	int counter = 10000;
+//	int counter = 1000000;
 	for (size_t iA = 0; iA < workingList.size(); ++iA)
 	{
 		SphereNode* nodeA = workingList[iA];
@@ -51,11 +51,11 @@ void SphereTree::buildTree(double threshold)
 			if (iA == iB)
 				continue;
 			UT_BoundingSphere sphereAB;
-			if (counter == 0)
-			{
-				std::cout << "COUNTER ZERO !" << std::endl;
-				continue;
-			}
+//			if (counter == 0)
+//			{
+//				std::cout << "COUNTER ZERO !" << std::endl;
+//				continue;
+//			}
 			if (nodeA->canMerge(nodeB, threshold, sphereAB))
 			{
 				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
@@ -64,7 +64,7 @@ void SphereTree::buildTree(double threshold)
 				workingList.push_back(mergedNode);
 				workingList[iA] = NULL;
 				workingList[iB] = NULL;
-				counter--;
+//				counter--;
 				break;
 			}
 		}

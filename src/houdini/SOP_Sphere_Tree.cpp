@@ -18,7 +18,7 @@ void newSopOperator(OP_OperatorTable *table)
 {
 	table->addOperator(
 			new OP_Operator("sphere_tree", "Sphere Tree", SOP_Sphere_Tree::myConstructor,
-					SOP_Sphere_Tree::myTemplateList, 2, // Min required sources
+					SOP_Sphere_Tree::myTemplateList, 1, // Min required sources
 					2,	// Maximum sources
 					0));
 }
@@ -58,29 +58,13 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 
 	core::SphereTree sphereTree;
 	sphereTree.initialize(mesh, THRESHOLD());
-	std::vector<core::SphereNode*> completeNodeList = sphereTree.getCompleteNodeList();
 
-//	for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
-//			it != completeNodeList.end(); ++it)
-//	{
-//		if ((*it)->level == LEVEL())
-//		{
-//			UT_BoundingSphere boundingSphere = (*it)->sphere;
-//			buildSphereFromBoundingSphere(boundingSphere);
-//		}
-//	}
-
-	for(int i=0;i<pointsGdp->getNumPoints();i++)
+	if (pointsGdp == NULL)
 	{
-		GA_Offset ptoff = pointsGdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(i);
-		UT_Vector3 P = pointsGdp->getPos3(ptoff);
+		std::vector<core::SphereNode*> completeNodeList = sphereTree.getCompleteNodeList();
 
-		std::vector<GEO_PrimPoly*> filteredPrimList;
-		std::vector<core::SphereNode*> filteredNodeList;
-		sphereTree.getFilteredPrimList(P, filteredNodeList,filteredPrimList);
-
-		for (std::vector<core::SphereNode*>::iterator it = filteredNodeList.begin();
-				it != filteredNodeList.end(); ++it)
+		for (std::vector<core::SphereNode*>::iterator it = completeNodeList.begin();
+				it != completeNodeList.end(); ++it)
 		{
 			if ((*it)->level == LEVEL())
 			{
@@ -89,7 +73,28 @@ OP_ERROR SOP_Sphere_Tree::cookMySop(OP_Context &context)
 			}
 		}
 	}
+	else
+	{
+		for (int i = 0; i < pointsGdp->getNumPoints(); i++)
+		{
+			GA_Offset ptoff = pointsGdp->getIndexMap(GA_ATTRIB_POINT).offsetFromIndex(i);
+			UT_Vector3 P = pointsGdp->getPos3(ptoff);
 
+			std::vector<GEO_PrimPoly*> filteredPrimList;
+			std::vector<core::SphereNode*> filteredNodeList;
+			sphereTree.getFilteredPrimList(P, filteredNodeList, filteredPrimList);
+
+			for (std::vector<core::SphereNode*>::iterator it = filteredNodeList.begin();
+					it != filteredNodeList.end(); ++it)
+			{
+				if ((*it)->level == LEVEL())
+				{
+					UT_BoundingSphere boundingSphere = (*it)->sphere;
+					buildSphereFromBoundingSphere(boundingSphere);
+				}
+			}
+		}
+	}
 	return error();
 }
 

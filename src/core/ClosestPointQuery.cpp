@@ -23,7 +23,7 @@ UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
 
 	std::vector<GEO_PrimPoly*> filteredPrimList;
 	std::vector<SphereNode*> filteredNodeList;
-	sphereTree.getFilteredPrimList(P, filteredNodeList,filteredPrimList);
+	sphereTree.getFilteredPrimList(P, filteredNodeList, filteredPrimList);
 
 	for (std::vector<GEO_PrimPoly*>::iterator it = filteredPrimList.begin();
 			it != filteredPrimList.end(); ++it)
@@ -36,9 +36,7 @@ UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
 			minProjectedPos = projectedPos;
 		}
 	}
-
 	return minProjectedPos;
-
 }
 
 double clamp(double val, double min, double max)
