@@ -13,7 +13,7 @@ class ClosestPointQuery
 public:
 	ClosestPointQuery(const GU_Detail* mesh, double threshold);
 	virtual ~ClosestPointQuery();
-	UT_Vector3 operator()(UT_Vector3 P, double maxDist);
+	UT_Vector3 operator()(UT_Vector3 P, double maximumQueryDistance);
 private:
 	const GU_Detail* mesh;
 	SphereTree sphereTree;

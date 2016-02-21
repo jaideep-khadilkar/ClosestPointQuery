@@ -1,26 +1,39 @@
 #include "ClosestPointQuery.h"
 #include "GEO/GEO_PrimPoly.h"
 
+
+/*
+ * This is the main class which implements Closest Point Query
+ */
+
 namespace core
 {
 
 ClosestPointQuery::ClosestPointQuery(const GU_Detail* mesh, double threshold) :
 		mesh(mesh)
 {
+	/*
+	 * The SphereTree acceleration structure building process.
+	 */
 	sphereTree.initialize(mesh, threshold);
 }
 
 ClosestPointQuery::~ClosestPointQuery()
 {
-	// TODO Auto-generated destructor stub
 }
 
-UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
+UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maximumQueryDistance)
 {
 
-	double minDist = maxDist;
+	double minDist = maximumQueryDistance;
 	UT_Vector3 minProjectedPos = P;
 
+	/*
+	 * The main filtering process of primitives happens here.
+	 * The SphereTree acceleration structure is queried and it returns
+	 * a list of primitives which we need to consider for finding
+	 * the minimum distance to the mesh.
+	 */
 	std::vector<GEO_PrimPoly*> filteredPrimList;
 	std::vector<SphereNode*> filteredNodeList;
 	sphereTree.getFilteredPrimList(P, filteredNodeList, filteredPrimList);
@@ -28,6 +41,12 @@ UT_Vector3 ClosestPointQuery::operator()(UT_Vector3 P, double maxDist)
 	for (std::vector<GEO_PrimPoly*>::iterator it = filteredPrimList.begin();
 			it != filteredPrimList.end(); ++it)
 	{
+		/*
+		 * For each Triangle in the list, find the closest point from the query point.
+		 * Record the distance between them. The triangle with the least distance from
+		 * the query point is the nearest and the projected point is the closest point
+		 * on the surface.
+		 */
 		UT_Vector3 projectedPos = projectOntoTriangle(P, *it);
 		double dist = projectedPos.distance(P);
 		if (dist < minDist)
@@ -48,8 +67,12 @@ double clamp(double val, double min, double max)
 	return val;
 }
 
+/*
+ * Distance Between Point and Triangle in 3D
+ */
 UT_Vector3 ClosestPointQuery::projectOntoTriangle(const UT_Vector3& P, GEO_PrimPoly* poly)
 {
+
 	UT_Vector3 p0 = poly->getPos3(0);
 	UT_Vector3 p1 = poly->getPos3(1);
 	UT_Vector3 p2 = poly->getPos3(2);

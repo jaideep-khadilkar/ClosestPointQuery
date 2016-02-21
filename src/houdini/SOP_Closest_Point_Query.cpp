@@ -57,7 +57,12 @@ OP_ERROR SOP_Closest_Point_Query::cookMySop(OP_Context &context)
 	GA_Attribute* pscale = gdp->findPointAttribute("pscale");
 	GA_ROHandleF pscale_handle(pscale);
 
-	// For each point, find the closest point on the mesh.
+	/*
+	 * For each point, find the closest point on the mesh.
+	 * Use the pscale attribute to set the maximum distance of the query.
+	 * If pscale attribute is not present, avoid any limit on the max distance.
+	 */
+
 	GA_FOR_ALL_PTOFF(gdp, ptoff)
 	{
 		UT_Vector3 pos = gdp->getPos3(ptoff);

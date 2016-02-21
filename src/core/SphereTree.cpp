@@ -1,5 +1,16 @@
 #include "SphereTree.h"
 
+
+/*
+ * SphereTree is the main acceleration structure that we use here.
+ * This approach creates Bounding Volume Hierarchy using Bottom-Up construction.
+ * It creates a minimum bounding sphere for each triangle on the mesh.
+ * Then tries to combine two spheres using a criterion which depends on radii
+ * of both the spheres, and the radius of the combined sphere.
+ * While applying this criterion, it uses a threshold value to decide whether to apply the merge operation or not.
+ * It repeats the process on the old and new spheres and forms a tree structure.
+ */
+
 namespace core
 {
 
@@ -35,7 +46,6 @@ void SphereTree::buildTree(double threshold)
 
 	workingList = leafNodes;
 
-//	int counter = 1000000;
 	for (size_t iA = 0; iA < workingList.size(); ++iA)
 	{
 		SphereNode* nodeA = workingList[iA];
@@ -51,20 +61,14 @@ void SphereTree::buildTree(double threshold)
 			if (iA == iB)
 				continue;
 			UT_BoundingSphere sphereAB;
-//			if (counter == 0)
-//			{
-//				std::cout << "COUNTER ZERO !" << std::endl;
-//				continue;
-//			}
-			if (nodeA->canMerge(nodeB, threshold, sphereAB))
+			if (nodeA->canItMerge(nodeB, threshold, sphereAB))
 			{
-				SphereNode* mergedNode = nodeA->merge(nodeB, sphereAB);
+				SphereNode* mergedNode = nodeA->doMerge(nodeB, sphereAB);
 				highestLevel = std::max(highestLevel, mergedNode->level);
 				completeNodeList.push_back(mergedNode);
 				workingList.push_back(mergedNode);
 				workingList[iA] = NULL;
 				workingList[iB] = NULL;
-//				counter--;
 				break;
 			}
 		}
@@ -85,7 +89,8 @@ const std::vector<SphereNode*>& SphereTree::getCompleteNodeList() const
 	return completeNodeList;
 }
 
-void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
+void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P, double& minUpperBound,
+		std::vector<SphereNode*>& filterdList)
 {
 	if (parent->level == 0)
 	{
@@ -98,18 +103,21 @@ void SphereTree::distanceTest(SphereNode* parent, UT_Vector3 P)
 		if (localMinUpperBound < minUpperBound)
 			minUpperBound = localMinUpperBound;
 		if (parent->child1->lowerBound(P) < minUpperBound)
-			distanceTest(parent->child1, P);
+			distanceTest(parent->child1, P, minUpperBound, filterdList);
 		if (parent->child2->lowerBound(P) < minUpperBound)
-			distanceTest(parent->child2, P);
+			distanceTest(parent->child2, P, minUpperBound, filterdList);
 	}
 }
 
 void SphereTree::getFilteredPrimList(UT_Vector3 P, std::vector<SphereNode*>& filteredNodeList,
 		std::vector<GEO_PrimPoly*>& filteredPrimList)
 {
-	minUpperBound = DBL_MAX;
-	filterdList.clear();
+	double minUpperBound = DBL_MAX;
+	std::vector<SphereNode*> filterdList;
 
+	/*
+	 * For all the nodes at the highest level (or without parent), find the minimum upper bound.
+	 */
 	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
 			++it)
 	{
@@ -121,7 +129,11 @@ void SphereTree::getFilteredPrimList(UT_Vector3 P, std::vector<SphereNode*>& fil
 				minUpperBound = upperBound;
 		}
 	}
-
+	/*
+	 * For any of the nodes at the highest level (or without parent), if the lower_bound is less than minUpperBound,
+	 * we need to check that node and it's children. If lower_bound is greater than min_upper_bound, we can ignore that
+	 * node and all it's children.
+	 */
 	for (std::vector<core::SphereNode*>::iterator it = workingList.begin(); it != workingList.end();
 			++it)
 	{
@@ -131,12 +143,16 @@ void SphereTree::getFilteredPrimList(UT_Vector3 P, std::vector<SphereNode*>& fil
 			double lowerBound = (*it)->lowerBound(P);
 			if (lowerBound < minUpperBound)
 			{
-				distanceTest((*it), P);
+				distanceTest((*it), P, minUpperBound, filterdList);
 			}
 		}
 
 	}
 
+	/*
+	 * Second pass of filtering. As the minUpperBound is an evolving quantity, we compare its final value with the
+	 * lowerBounds of remaining spheres. It helps to reduce the number of spheres to be checked.
+	 */
 	for (std::vector<core::SphereNode*>::iterator it = filterdList.begin(); it != filterdList.end();
 			++it)
 	{

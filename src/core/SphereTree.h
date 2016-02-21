@@ -24,15 +24,14 @@ public:
 	}
 
 private:
-	void distanceTest(SphereNode* parent, UT_Vector3 P);
+	void distanceTest(SphereNode* parent, UT_Vector3 P, double& minUpperBound,
+			std::vector<SphereNode*>& filterdList);
 
 	std::vector<SphereNode*> completeNodeList;
 	std::vector<SphereNode*> leafNodes;
 	std::vector<SphereNode*> workingList;
-	std::vector<SphereNode*> filterdList;
 	const GU_Detail* mesh;
 	int highestLevel;
-	double minUpperBound;
 
 	void buildLeafNodes();
 	void buildTree(double threshold);
